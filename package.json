@@ -1,0 +1,25 @@
+{
+  "dependencies": {
+    "express": "^4.18.1"
+  },
+  "name": "coder_desafios",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "start": "node index.js",
+    "start-dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gersonfz/CoderDesafios.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gersonfz/CoderDesafios/issues"
+  },
+  "homepage": "https://github.com/gersonfz/CoderDesafios#readme",
+  "description": ""
+}

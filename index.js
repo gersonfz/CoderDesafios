@@ -1,92 +1,46 @@
-const fs = require('fs')
+const express = require('express')
+const Products = require('./productsConstructor')
 
-class Container{
-    constructor(name){
-        this.name = name
-    }
-    async fileInJSON() {
-        let data = await fs.promises.readFile(this.name, "utf-8");
-        let dataJSON = JSON.parse(data);
-        return dataJSON;
-    }
-    
-    async fileSaving(item) {
-        let dataJSON = JSON.stringify(item);
-        await fs.promises.writeFile(this.name, dataJSON);
-    }
-    
-    async save (item){
-        try{
-            let data = await this.fileInJSON()
-            let lastIndex = data.length - 1
-            let lastId = data[lastIndex].id
-            item.id = lastId + 1
-            let id = item.id
-            data.push(item)
-            this.fileSaving(data)
-            return id
-        }
-        catch(error){
-            console.log(error);
-        }
-    }
-    async getById(id){
-        try{
-            let data = await this.fileInJSON()
-            let containerArray
-            data.map(el => {el.id === id &&(containerArray = el)})
-            return containerArray
-        }
-        catch(error){
-            console.log(error);
-        }
+let Prod = []
+let ProdById = []
+Products.getAll().then(res => Prod = res)
+Products.getById(2).then(res => ProdById = res)
 
-    }
-    async getAll(){
-        try{
-            let data = await this.fileInJSON()
-            return data
-        }
-        catch(error){
-            console.log(error);
-        }
 
-    }
-    async deleteById(id){
-        try{
-            let data = await this.fileInJSON()
-            let item = data.find((item) => item.id === id);
-            let index = data.indexOf(item);
-            data.splice(index, 1);
-            this.fileSaving(data);
-        }
-        catch(error){
-            console.log(error);
-        }
-    }
-    async deleteAll(){
-        try{
-            let item = []
-            this.fileSaving(item)
-        }
-        catch(error){
-            console.log(error);
-        }    
-    }
-}
+const PORT = process.env.PORT || 8080
 
-let container = new Container("product.json")
+const app = express()
 
-let informacionNueva = {
-    "title": "Lapiz",                                                                                                                          
-    "price": 123.11,                                                                                                                                     
-    "thumbnail": "https://cdn3.iconfinder.com/data/icons/education-209/64/globe-earth-geograhy-planet-school-256.png",
-    
-}
-// container.save(informacionNueva)    
+app.get('/', (req, res) => {
+    res.send(`<h1>Pagina de inicio.</h1>
+    <p>Si desea ir a la pagina de productos, dar click en:
+    <a href="/productos">Productos</a>
+    <a href="/productorandom">Producto random</a>
+    </p>`)
+})
 
-// container.getById(4).then(res => console.log(res))
-// container.getAll().then(res => console.log(res))
+app.get('/productos', (req, res) => {
+    res.send(`<h1>Productos</h1>
+    ${Prod.map(el => {return `<p>${el.title}</p>
+    <p>Precio: $${el.price}</p>`})}
+    <a href="/productorandom">Producto random</a>
+    <a href="/">Home</a>
+    `)
+})
 
-// container.deleteById(1)
-// container.deleteAll()
+app.get('/productorandom', (req, res) => {
+    res.send(`<h1>Producto Random</h1>
+    <p>${ProdById.title}</p>
+    <p>Precio: $${ProdById.price}</p>
+    <a href="/productos">Productos</a>
+    <a href="/">Home</a>
+    `)
+})
+
+const connectedServer = app.listen(PORT, () =>{
+    console.log(`Server is up and running on port ${PORT}`);
+})
+
+connectedServer.on('error', (error) => {
+    console.log(error.message);
+})
