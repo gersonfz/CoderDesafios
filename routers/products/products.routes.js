@@ -1,23 +1,20 @@
 const express = require('express');
-const products = require('../../data/product');
-const ProductsConstructor = require('../../utils/productsConstructor')
+const ProductsConstructor = require('../../model/productsConstructor')
 const router = express.Router();
 
-//Middlewares
-
-
+const ProductsCons = new ProductsConstructor();
 router.get('/', (req, res) => {
-    res.json(products)
+    res.send(ProductsCons.getAll())
 })
 
 router.get('/:id', (req, res) => {
     const { id } = req.params;
     console.log(id);
-    const product = products.find(element => element.id === +id);
+    const product = ProductsCons.list.find(element => element.id === +id);
     if (!product) {
         return res.status(404).json({error: `Product with id: ${id} does not exist!`});
     }
-    res.json(product);
+    res.send(ProductsCons.getById(id))
 })
 
 router.post('/', (req, res) => {
@@ -32,8 +29,8 @@ router.post('/', (req, res) => {
         thumbnail,
         id: products.length + 1
     };
-    products.push(newProduct);
-    ProductsConstructor.save(newProduct);
+    products.list.push(newProduct);
+    ProductsCons.save(newProduct);
     return res.json({ success: true, result: newProduct });
 });
 
@@ -42,7 +39,7 @@ router.put('/:id', (req, res) => {
     if ( !title || !price || !thumbnail) {
         return res.status(400).json({ success: false, error: 'Wrong body format' });
     };
-    const productIndex = products.findIndex((product) => product.id === +id);
+    const productIndex = products.list.findIndex((product) => product.id === +id);
     if (productIndex < 0) return res.status(404).json({ success: false, error: `Product with id: ${id} does not exist!`});
     const newProduct = {
         ...products[productIndex],
@@ -50,18 +47,18 @@ router.put('/:id', (req, res) => {
         price,
         thumbnail
     };
-    products[productIndex] = newProduct;
-    ProductsConstructor.fileSaving(products)
+    products.list[productIndex] = newProduct;
+    ProductsCons.fileSaving(products)
     return res.json({ success: true, result: newProduct});
 });
 
 router.delete('/:id', (req, res) => {
     const { id } = req.params;
-    const productIndex = products.findIndex(product => product.id === +id);
+    const productIndex = products.list.findIndex(product => product.id === +id);
     if (productIndex < 0) return res.status(404).json({ success: false, error: `Product with id ${id} does not exist!`});
     console.log(productIndex);
-    products.splice(productIndex, 1);
-    ProductsConstructor.deleteById(id)
+    products.list.splice(productIndex, 1);
+    ProductsCons.deleteById(id)
     return res.json({ success: true, result: 'product correctly eliminated' });
 });
 
