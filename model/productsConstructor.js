@@ -1,65 +1,73 @@
 const fs = require('fs')
-const products = require('../data/product')
+const path = require('path')
 
 class ProductsConstructor{
-    static lastProductId = products[products.length - 1].id;
-
-    constructor() {
-        this.list = products;
+    constructor(name){
+        this.name = name
     }
+    async fileInJSON() {
+        let data = await fs.promises.readFile(this.name, "utf-8");
+        let dataJSON = JSON.parse(data);
 
-    getAll() {
-        return this.list;
+        return dataJSON;
     }
-
-    getById(productId) {
-        console.log(productId);
-        return this.list.find(product => product.id === +productId);
+    async fileSaving(item) {
+        let dataJSON = JSON.stringify(item);
+        await fs.promises.writeFile(this.name, dataJSON);
     }
-
-    save(product) {
-        const { nombre, descripcion, precio, imagen } = product;
-            if ( !nombre || !descripcion || !precio || !imagen) {
-        return null;
+    async save (item){
+        try{
+            let data = await this.fileInJSON()
+            if(data.length){                
+                let lastIndex = data.length - 1
+                let lastId = data[lastIndex].id
+                item.id = lastId + 1
+                let id = item.id
+                data.push(item)
+                this.fileSaving(data)
+                return id
+            }else{
+                let newProduct = item;
+                console.log("item" + item);
+                console.log("Agregando nuevo producto" + newProduct);
+                this.fileSaving(newProduct)
+            }
+        }
+        catch(error){
+            console.log(error);
+        }
     }
-    Products.lastProductId++;
-    const newProduct = {
-        id: Products.lastProductId,
-        nombre,
-        descripcion,
-        precio,
-        imagen
-    };
-    this.list.push(newProduct);
-    return newProduct;
-    };
-
-    updateById(productId, product) {
-        const productIndex = this.list.findIndex((producto) => producto.id === +productId);
-            if (productIndex < 0) return null;
-        const {
-            nombre,
-            descripcion,
-            precio,
-            imagen
-        } = product;
-        const updatedProduct = {
-            id: this.list[productIndex].id,
-            nombre,
-            descripcion,
-            precio,
-            imagen
-        };
-        this.list[productIndex] = updatedProduct;
-        return updatedProduct;
+    async getAll(){
+        try{
+            let data = await this.fileInJSON()
+            return data
+        }
+        catch(error){
+            console.log(error);
+        }
     }
-
-    deleteById(productId) {
-        const productIndex = this.list.findIndex((producto) => producto.id === +productId);
-        if (productIndex < 0) return null;
-        return this.list.splice(productIndex, 1);
+    async getById(id){
+        try{
+            let data = await this.fileInJSON()
+            let containerArray
+            data.map(el => {el.id === +id &&(containerArray = el)})
+            return containerArray
+        }
+        catch(error){
+            console.log(error);
+        }
+    }
+    async deleteById(id){
+        try{
+            let data = await this.fileInJSON()
+            const productIndex = data.findIndex(product => product.id === +id);
+            data.splice(productIndex, 1);
+            this.fileSaving(data);
+        }
+        catch(error){
+            console.log(error);
+        }
     }
 }
 
-
-module.exports = ProductsConstructor;
+module.exports = new ProductsConstructor(path.resolve(__dirname, '../data/product.json'))

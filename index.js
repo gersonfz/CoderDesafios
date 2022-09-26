@@ -4,30 +4,47 @@ const apiRoutes = require('./routers/app.routes')
 const { engine } = require('express-handlebars')
 const ProductsConstructor = require('./model/productsConstructor')
 
+let Product
+
+ProductsConstructor.getAll().then(res => {
+    Product = res
+})
 
 const PORT = process.env.PORT || 8080
 const app = express()
-const products = new ProductsConstructor()
 
-
-// Views Handlebars
-app.engine('hbs', engine({
-    extname: 'hbs',
-    defaultLayout: 'main.hbs',
-    layoutsDir: path.resolve(__dirname, './views/layouts'),
-    partialsDir: path.resolve(__dirname, './views/partials')
-}))
-
-// Set Handlebars
-app.set('views', './views');
-app.set('views engine', 'hbs');
-app.get('/api/products', (req, res) => {
-    res.render('index.hbs', {products: products.getAll()});
-})
 
 //Middlewares
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }));
+app.use(express.static('public'))
+
+// // Views Handlebars
+// app.engine('hbs', engine({
+//     extname: 'hbs',
+//     defaultLayout: 'main.hbs',
+//     layoutsDir: path.resolve(__dirname, './views/handlebars/layouts'),
+//     partialsDir: path.resolve(__dirname, './views/handlebars/partials')
+// }))
+
+// // Set Handlebars
+// app.set('views', './views/handlebars');
+// app.set('views engine', 'hbs');
+// app.get('/api/products', (req, res) => {
+//     res.render('index.hbs', {
+//          products: Product, showProducts: Product.length
+//      })
+// })
+
+// Pug
+
+app.set('views', './views/pug');
+app.set('view engine', 'pug');
+app.get('/api/products', (req, res) => {
+    res.render('index.pug', {
+        products: Product, showProducts: Product.length
+    })
+})
 
 // Routes
 app.use('/api', apiRoutes)

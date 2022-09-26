@@ -1,0 +1,57 @@
+<style>
+        .wrapper{
+        color: antiquewhite;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        justify-content: center;
+        width: fit-content;
+        background-color: darkslategrey;
+        border-radius: 5px;
+    }
+    .wrapper div p{
+        padding: 0 25px;
+    }
+    .wrapper img{
+        width: 100px;
+        height: 100px;
+    }
+    .divContainer{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+    .btn{
+        text-decoration: none;
+        color: antiquewhite;
+        background-color: darkslategrey;
+        width: fit-content;
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 5px;
+    }
+    .btn:hover{
+        background-color:darkcyan;
+        color:white;
+        transition: 0.3s all ease-in-out;
+    }
+</style>
+        <div class="wrapper">
+            {{#each products}}
+            <div class="divContainer">
+                <div>
+                    <p>Nombre:</p>
+                    <p>{{this.title}}</p>
+                </div>
+                <div>
+                    <p>Precio:</p>
+                    <p>{{this.price}}</p>
+                </div>
+                <div>
+                    <p>Imagen:</p>
+                    <img src={{this.thumbnail}} alt={{this.id}}>
+                </div>
+            </div>
+            {{/each}}
+        </div>

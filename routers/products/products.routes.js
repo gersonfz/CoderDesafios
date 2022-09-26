@@ -1,20 +1,21 @@
 const express = require('express');
 const ProductsConstructor = require('../../model/productsConstructor')
+const products = require('../../data/product.json')
 const router = express.Router();
 
-const ProductsCons = new ProductsConstructor();
+
 router.get('/', (req, res) => {
-    res.send(ProductsCons.getAll())
+    res.send(ProductsConstructor.getAll())
 })
 
 router.get('/:id', (req, res) => {
     const { id } = req.params;
     console.log(id);
-    const product = ProductsCons.list.find(element => element.id === +id);
+    const product = products.find(element => element.id === +id);
     if (!product) {
         return res.status(404).json({error: `Product with id: ${id} does not exist!`});
     }
-    res.send(ProductsCons.getById(id))
+    res.json(product);
 })
 
 router.post('/', (req, res) => {
@@ -29,9 +30,14 @@ router.post('/', (req, res) => {
         thumbnail,
         id: products.length + 1
     };
-    products.list.push(newProduct);
-    ProductsCons.save(newProduct);
-    return res.json({ success: true, result: newProduct });
+    if(products.length){
+        const moreProduct = newProduct;
+        ProductsConstructor.save(moreProduct);
+    }else{
+        const noOneProduct = [newProduct];
+        ProductsConstructor.save(noOneProduct);
+    }
+    return res.redirect("/");
 });
 
 router.put('/:id', (req, res) => {
