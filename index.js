@@ -19,30 +19,38 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'))
 
-// // Views Handlebars
-// app.engine('hbs', engine({
-//     extname: 'hbs',
-//     defaultLayout: 'main.hbs',
-//     layoutsDir: path.resolve(__dirname, './views/handlebars/layouts'),
-//     partialsDir: path.resolve(__dirname, './views/handlebars/partials')
-// }))
 
-// // Set Handlebars
-// app.set('views', './views/handlebars');
-// app.set('views engine', 'hbs');
+// Set templates
+app.set('views', './views/ejs');
+app.set('views engine', 'ejs');
+
+// Views Handlebars
+app.engine('hbs', engine({
+    extname: 'hbs',
+    defaultLayout: 'main.hbs',
+    layoutsDir: path.resolve(__dirname, './views/handlebars/layouts'),
+    partialsDir: path.resolve(__dirname, './views/handlebars/partials')
+}))
+
 // app.get('/api/products', (req, res) => {
 //     res.render('index.hbs', {
-//          products: Product, showProducts: Product.length
-//      })
+//         products: Product, showProducts: Product.length
+//     })
 // })
 
 // Pug
 
-app.set('views', './views/pug');
-app.set('view engine', 'pug');
+// app.get('/api/products', (req, res) => {
+//     res.render('index.pug', {
+//         products: Product, showProducts: Product.length
+//     })
+// })
+
+// Ejs
+
 app.get('/api/products', (req, res) => {
-    res.render('index.pug', {
-        products: Product, showProducts: Product.length
+    res.render('index.ejs', {
+            products: Product, showProducts: Product.length
     })
 })
 
