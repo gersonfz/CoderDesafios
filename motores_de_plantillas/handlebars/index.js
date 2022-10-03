@@ -21,36 +21,20 @@ app.use(express.static('public'))
 
 
 // Set templates
-app.set('views', './views/ejs');
-app.set('views engine', 'ejs');
+app.set('views', './views');
+app.set('view engine', 'hbs');
 
 // Views Handlebars
 app.engine('hbs', engine({
     extname: 'hbs',
     defaultLayout: 'main.hbs',
-    layoutsDir: path.resolve(__dirname, './views/handlebars/layouts'),
-    partialsDir: path.resolve(__dirname, './views/handlebars/partials')
+    layoutsDir: path.resolve(__dirname, './views/layouts'),
+    partialsDir: path.resolve(__dirname, './views/partials')
 }))
 
-// app.get('/api/products', (req, res) => {
-//     res.render('index.hbs', {
-//         products: Product, showProducts: Product.length
-//     })
-// })
-
-// Pug
-
-// app.get('/api/products', (req, res) => {
-//     res.render('index.pug', {
-//         products: Product, showProducts: Product.length
-//     })
-// })
-
-// Ejs
-
 app.get('/api/products', (req, res) => {
-    res.render('index.ejs', {
-            products: Product, showProducts: Product.length
+    res.render('index.hbs', {
+        products: Product, showProducts: Product.length
     })
 })
 
