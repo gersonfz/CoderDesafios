@@ -1,15 +1,22 @@
 const fs = require('fs')
-const path = require('path')
 
 class ProductsConstructor{
     constructor(name){
-        this.name = name
+        this.name = name;
     }
     async fileInJSON() {
-        let data = await fs.promises.readFile(this.name, "utf-8");
-        let dataJSON = JSON.parse(data);
-
-        return dataJSON;
+        try{
+            const data = await fs.promises.readFile(this.name, "utf-8");
+            if(data){
+                return JSON.parse(data);
+            }else{
+                return []
+            }
+        }
+        catch (error){
+            console.log(error);
+            return []
+        }
     }
     async fileSaving(item) {
         let dataJSON = JSON.stringify(item);
@@ -17,7 +24,7 @@ class ProductsConstructor{
     }
     async save (item){
         try{
-            let data = await this.fileInJSON()
+            let data = await this.getAll()
             if(data.length){                
                 let lastIndex = data.length - 1
                 let lastId = data[lastIndex].id
@@ -28,9 +35,7 @@ class ProductsConstructor{
                 return id
             }else{
                 let newProduct = item;
-                console.log("item" + item);
-                console.log("Agregando nuevo producto" + newProduct);
-                this.fileSaving(newProduct)
+                this.fileSaving([newProduct])
             }
         }
         catch(error){
@@ -40,10 +45,15 @@ class ProductsConstructor{
     async getAll(){
         try{
             let data = await this.fileInJSON()
-            return data
+            if (data.length){
+                return data
+            }else{
+                return data = []
+            }
         }
         catch(error){
             console.log(error);
+            return []
         }
     }
     async getById(id){
@@ -70,4 +80,4 @@ class ProductsConstructor{
     }
 }
 
-module.exports = new ProductsConstructor(path.resolve(__dirname, '../data/product.json'))
+module.exports = ProductsConstructor
